@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane id="AnchorPane" prefHeight="493.0" prefWidth="715.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="dictionaryclient.FXMLDocumentController">
+   <children>
+      <Pane prefHeight="495.0" prefWidth="167.0" style="-fx-background-color: #7c0426;">
+         <children>
+            <Label alignment="CENTER" layoutX="1.0" layoutY="6.0" prefHeight="51.0" prefWidth="167.0" text="Dictionary" textFill="WHITE">
+               <font>
+                  <Font size="20.0" />
+               </font>
+            </Label>
+            <Label alignment="CENTER" layoutX="10.0" layoutY="456.0" prefHeight="25.0" prefWidth="148.0" text="© All Rights Reserved" textFill="WHITE" />
+            <JFXButton fx:id="addPaneButton" layoutX="5.0" layoutY="142.0" onAction="#onAddPaneButton" prefHeight="34.0" prefWidth="148.0" style="-fx-background-color: #0d47a1;" text="Add" textFill="WHITE" />
+            <JFXButton fx:id="deletePaneButton" layoutX="6.0" layoutY="196.0" onAction="#onDeletePaneButton" prefHeight="34.0" prefWidth="148.0" style="-fx-background-color: #b71c1c;" text="Delete" textFill="WHITE" />
+            <JFXButton fx:id="searchPaneButton" layoutX="6.0" layoutY="91.0" onAction="#onSearchPaneButton" prefHeight="34.0" prefWidth="148.0" style="-fx-background-color: #0aa405;" text="Search" textFill="WHITE" />
+         </children>
+      </Pane>
+      <AnchorPane fx:id="searchPane" layoutX="167.0" layoutY="24.0" prefHeight="495.0" prefWidth="558.0" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <TextField fx:id="searchBox" layoutX="57.0" layoutY="26.0" prefHeight="34.0" prefWidth="226.0" promptText="Search here" />
+            <Label fx:id="wordField" layoutX="67.0" layoutY="113.0" prefHeight="34.0" prefWidth="400.0" text="DEFINATION TERM" textFill="#7c0426" />
+            <Label fx:id="meaningField" alignment="TOP_LEFT" layoutX="68.0" layoutY="181.0" prefHeight="276.0" prefWidth="413.0" text="DEFINATION DETAIL" textFill="#192c65" wrapText="true" />
+            <JFXButton layoutX="339.0" layoutY="26.0" onAction="#searchWord" prefHeight="34.0" prefWidth="102.0" style="-fx-background-color: #0aa405;" text="Search" textFill="WHITE" />
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="addPane" layoutX="177.0" layoutY="18.0" prefHeight="473.0" prefWidth="548.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <TextField fx:id="keyword" layoutX="105.0" layoutY="60.0" prefHeight="34.0" prefWidth="343.0" promptText="Word (keyword)" />
+            <JFXButton layoutX="346.0" layoutY="408.0" onAction="#addWord" prefHeight="34.0" prefWidth="102.0" style="-fx-background-color: #0d47a1;" text="Add" textFill="WHITE" />
+            <TextArea fx:id="meaningOne" layoutX="103.0" layoutY="139.0" prefHeight="100.0" prefWidth="343.0" promptText="Meaning One" />
+            <TextArea fx:id="meaning_two" layoutX="103.0" layoutY="289.0" prefHeight="91.0" prefWidth="343.0" promptText="Meaning Two" />
+            <Label layoutX="105.0" layoutY="248.0" prefHeight="34.0" prefWidth="92.0" text="Optional" textFill="#7c0426" />
+            <Label layoutX="103.0" layoutY="105.0" prefHeight="34.0" prefWidth="92.0" text="Required *" textFill="#7c0426" />
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="deletePane" layoutX="167.0" layoutY="10.0" prefHeight="495.0" prefWidth="558.0" visible="false" AnchorPane.bottomAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+         <children>
+            <TextField fx:id="deleteTextBox" layoutX="105.0" layoutY="114.0" prefHeight="34.0" prefWidth="301.0" promptText="Type here" />
+            <JFXButton layoutX="304.0" layoutY="185.0" onAction="#deleteWord" prefHeight="34.0" prefWidth="102.0" style="-fx-background-color: #b71c1c;" text="Delete" textFill="WHITE" />
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>
