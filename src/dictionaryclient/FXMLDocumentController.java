@@ -32,6 +32,8 @@ import models.Dictionary;
  */
 public class FXMLDocumentController implements Initializable {
 
+    public int PORT;
+    public String IP;
     private Label label;
     @FXML
     private JFXButton addPaneButton;
@@ -70,6 +72,11 @@ public class FXMLDocumentController implements Initializable {
         // TODO
     }
 
+    public void setParameters(int port, String ip) {
+        this.PORT = port;
+        this.IP = ip;
+    }
+
     @FXML
     private void onAddPaneButton(ActionEvent event) {
         searchPane.setVisible(false);
@@ -96,36 +103,45 @@ public class FXMLDocumentController implements Initializable {
     private void searchWord(ActionEvent event) {
         Alert Falert = new Alert(Alert.AlertType.ERROR);
         Falert.setHeaderText("Error");
-        try {
-            Socket socket = new Socket("localhost", 1234);
+        if (searchBox.getText().isEmpty()) {
+            Falert.setContentText("Empty Filed, Please Insert word");
+            Falert.showAndWait();
+        } else if (!searchBox.getText().matches("[a-zA-Z]+")) {
+            Falert.setContentText("Word can only be letter");
+            Falert.showAndWait();
+        } else {
+            try {
+                Socket socket = new Socket(this.IP, this.PORT);
 
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-            ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
-            Dictionary dictionary = new Dictionary(searchBox.getText(), null);
-            dictionary.setRequest("find");
-            objectOutputStream.writeObject(dictionary);
-            Dictionary recevied = (Dictionary) objectInputStream.readObject();
-            if (recevied.getWasSucceful()) {
-                wordField.setText("DEFINATION TERM:  " + recevied.getKeyword());
-                String meanings = "";
-                int count = 1;
-                for (String meaning : recevied.getMeanings()) {
-                    meanings = meanings + "#DEFINATION " + count + "\n";
-                    meanings = meanings + meaning + "\n\n";
-                    count++;
+                ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+                ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
+                Dictionary dictionary = new Dictionary(searchBox.getText(), null);
+                dictionary.setRequest("find");
+                objectOutputStream.writeObject(dictionary);
+                Dictionary recevied = (Dictionary) objectInputStream.readObject();
+                if (recevied.getWasSucceful()) {
+                    wordField.setText("DEFINATION TERM:  " + recevied.getKeyword());
+                    String meanings = "";
+                    int count = 1;
+                    for (String meaning : recevied.getMeanings()) {
+                        meanings = meanings + "#DEFINATION " + count + "\n";
+                        meanings = meanings + meaning + "\n\n";
+                        count++;
+
+                    }
+                    meaningField.setText(meanings);
+                } else {
+                    Falert.setContentText("Word Does Not Exist!!");
+                    Falert.showAndWait();
 
                 }
-                meaningField.setText(meanings);
-            } else {
-                Falert.setContentText("Word Does Not Exist!!");
+
+                socket.close();
+
+            } catch (IOException | ClassNotFoundException ex) {
+                Falert.setContentText("Connection To The Server Lost");
                 Falert.showAndWait();
-
             }
-
-            socket.close();
-
-        } catch (IOException | ClassNotFoundException ex) {
-
         }
 
     }
@@ -134,36 +150,51 @@ public class FXMLDocumentController implements Initializable {
     private void addWord(ActionEvent event) {
         Alert Falert = new Alert(Alert.AlertType.ERROR);
         Falert.setHeaderText("Error");
-        try {
-            Socket socket = new Socket("localhost", 1234);
+        if (keyword.getText().isEmpty()) {
+            Falert.setContentText("Empty Keyword, Please Insert Word");
+            Falert.showAndWait();
+        } else if (!keyword.getText().matches("[a-zA-Z]+")) {
+            Falert.setContentText("Word can only be letter");
+            Falert.showAndWait();
+        } else if (meaningOne.getText().isEmpty()) {
+            Falert.setContentText("Empty Meaning, Please Insert Meaning");
+            Falert.showAndWait();
+        } else if (meaningOne.getText().length() < 10) {
+            Falert.setContentText("Meaning Must be atleast 10 letters");
+            Falert.showAndWait();
+        } else {
+            try {
+                Socket socket = new Socket(this.IP, this.PORT);
 
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-            ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
-            ArrayList<String> meanings = new ArrayList<>();
-            meanings.add(meaningOne.getText());
-            if(!meaning_two.getText().isEmpty()){
-                meanings.add(meaning_two.getText());
-            }
-            Dictionary dictionary = new Dictionary(keyword.getText(), meanings);
-            dictionary.setRequest("add");
-            objectOutputStream.writeObject(dictionary);
-            Dictionary recevied = (Dictionary) objectInputStream.readObject();
-            if (recevied.getWasSucceful()) {
-                
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setHeaderText("Smart Dectionary");
-                        alert.setContentText("Wrod Removed Sussfully!!");
-                        alert.showAndWait();
-            } else {
-                Falert.setContentText("Word Already Exist!!");
+                ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+                ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
+                ArrayList<String> meanings = new ArrayList<>();
+                meanings.add(meaningOne.getText());
+                if (!meaning_two.getText().isEmpty()) {
+                    meanings.add(meaning_two.getText());
+                }
+                Dictionary dictionary = new Dictionary(keyword.getText(), meanings);
+                dictionary.setRequest("add");
+                objectOutputStream.writeObject(dictionary);
+                Dictionary recevied = (Dictionary) objectInputStream.readObject();
+                if (recevied.getWasSucceful()) {
+
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setHeaderText("Smart Dectionary");
+                    alert.setContentText("Word Added Sussfully!!");
+                    alert.showAndWait();
+                } else {
+                    Falert.setContentText("Word Already Exist!!");
+                    Falert.showAndWait();
+
+                }
+
+                socket.close();
+
+            } catch (IOException | ClassNotFoundException ex) {
+                Falert.setContentText("Connection To The Server Lost");
                 Falert.showAndWait();
-
             }
-
-            socket.close();
-
-        } catch (IOException | ClassNotFoundException ex) {
-
         }
 
     }
@@ -172,31 +203,40 @@ public class FXMLDocumentController implements Initializable {
     private void deleteWord(ActionEvent event) {
         Alert Falert = new Alert(Alert.AlertType.ERROR);
         Falert.setHeaderText("Error");
-        try {
-            Socket socket = new Socket("localhost", 1234);
+        if (deleteTextBox.getText().isEmpty()) {
+            Falert.setContentText("Empty Filed, Please Insert word");
+            Falert.showAndWait();
+        } else if (!deleteTextBox.getText().matches("[a-zA-Z]+")) {
+            Falert.setContentText("Word can only be letter");
+            Falert.showAndWait();
+        } else {
+            try {
+                Socket socket = new Socket(this.IP, this.PORT);
 
-            ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-            ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
-            Dictionary dictionary = new Dictionary(deleteTextBox.getText(), null);
-            dictionary.setRequest("remove");
-            objectOutputStream.writeObject(dictionary);
-            Dictionary recevied = (Dictionary) objectInputStream.readObject();
-            if (recevied.getWasSucceful()) {
-                
-                Alert alert = new Alert(Alert.AlertType.INFORMATION);
-                        alert.setHeaderText("Smart Dectionary");
-                        alert.setContentText("Wrod Removed Sussfully!!");
-                        alert.showAndWait();
-            } else {
-                Falert.setContentText("Word Does Not Exist!!");
+                ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
+                ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
+                Dictionary dictionary = new Dictionary(deleteTextBox.getText(), null);
+                dictionary.setRequest("remove");
+                objectOutputStream.writeObject(dictionary);
+                Dictionary recevied = (Dictionary) objectInputStream.readObject();
+                if (recevied.getWasSucceful()) {
+
+                    Alert alert = new Alert(Alert.AlertType.INFORMATION);
+                    alert.setHeaderText("Smart Dectionary");
+                    alert.setContentText("Word Removed Sussfully!!");
+                    alert.showAndWait();
+                } else {
+                    Falert.setContentText("Word Does Not Exist!!");
+                    Falert.showAndWait();
+
+                }
+
+                socket.close();
+
+            } catch (IOException | ClassNotFoundException ex) {
+                Falert.setContentText("Connection To The Server Lost");
                 Falert.showAndWait();
-
             }
-
-            socket.close();
-
-        } catch (IOException | ClassNotFoundException ex) {
-
         }
 
     }
