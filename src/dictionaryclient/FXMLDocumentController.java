@@ -6,11 +6,14 @@
 package dictionaryclient;
 
 import com.jfoenix.controls.JFXButton;
+import interfaces.DictionaryServerInterface;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.URL;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
@@ -111,14 +114,11 @@ public class FXMLDocumentController implements Initializable {
             Falert.showAndWait();
         } else {
             try {
-                Socket socket = new Socket(this.IP, this.PORT);
-
-                ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-                ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
                 Dictionary dictionary = new Dictionary(searchBox.getText(), null);
-                dictionary.setRequest("find");
-                objectOutputStream.writeObject(dictionary);
-                Dictionary recevied = (Dictionary) objectInputStream.readObject();
+                Registry registry = LocateRegistry.getRegistry(this.IP,this.PORT);
+                DictionaryServerInterface dictionaryServerInterface = (DictionaryServerInterface)registry.lookup("dict");
+                Dictionary recevied = dictionaryServerInterface.findWord(dictionary);
+                
                 if (recevied.getWasSucceful()) {
                     wordField.setText("DEFINATION TERM:  " + recevied.getKeyword());
                     String meanings = "";
@@ -136,9 +136,8 @@ public class FXMLDocumentController implements Initializable {
 
                 }
 
-                socket.close();
 
-            } catch (IOException | ClassNotFoundException ex) {
+            } catch (Exception ex) {
                 Falert.setContentText("Connection To The Server Lost");
                 Falert.showAndWait();
             }
@@ -164,19 +163,15 @@ public class FXMLDocumentController implements Initializable {
             Falert.showAndWait();
         } else {
             try {
-                Socket socket = new Socket(this.IP, this.PORT);
-
-                ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-                ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
                 ArrayList<String> meanings = new ArrayList<>();
                 meanings.add(meaningOne.getText());
                 if (!meaning_two.getText().isEmpty()) {
                     meanings.add(meaning_two.getText());
                 }
                 Dictionary dictionary = new Dictionary(keyword.getText(), meanings);
-                dictionary.setRequest("add");
-                objectOutputStream.writeObject(dictionary);
-                Dictionary recevied = (Dictionary) objectInputStream.readObject();
+                Registry registry = LocateRegistry.getRegistry(this.IP,this.PORT);
+                DictionaryServerInterface dictionaryServerInterface = (DictionaryServerInterface)registry.lookup("dict");
+                Dictionary recevied = dictionaryServerInterface.addWord(dictionary);
                 if (recevied.getWasSucceful()) {
 
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -189,9 +184,8 @@ public class FXMLDocumentController implements Initializable {
 
                 }
 
-                socket.close();
 
-            } catch (IOException | ClassNotFoundException ex) {
+            } catch (Exception ex) {
                 Falert.setContentText("Connection To The Server Lost");
                 Falert.showAndWait();
             }
@@ -211,14 +205,10 @@ public class FXMLDocumentController implements Initializable {
             Falert.showAndWait();
         } else {
             try {
-                Socket socket = new Socket(this.IP, this.PORT);
-
-                ObjectOutputStream objectOutputStream = new ObjectOutputStream(socket.getOutputStream());
-                ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
                 Dictionary dictionary = new Dictionary(deleteTextBox.getText(), null);
-                dictionary.setRequest("remove");
-                objectOutputStream.writeObject(dictionary);
-                Dictionary recevied = (Dictionary) objectInputStream.readObject();
+                Registry registry = LocateRegistry.getRegistry(this.IP,this.PORT);
+                DictionaryServerInterface dictionaryServerInterface = (DictionaryServerInterface)registry.lookup("dict");
+                Dictionary recevied = dictionaryServerInterface.deleteWord(dictionary);
                 if (recevied.getWasSucceful()) {
 
                     Alert alert = new Alert(Alert.AlertType.INFORMATION);
@@ -231,9 +221,8 @@ public class FXMLDocumentController implements Initializable {
 
                 }
 
-                socket.close();
 
-            } catch (IOException | ClassNotFoundException ex) {
+            } catch (Exception ex) {
                 Falert.setContentText("Connection To The Server Lost");
                 Falert.showAndWait();
             }
